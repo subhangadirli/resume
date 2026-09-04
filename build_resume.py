@@ -316,7 +316,7 @@ def add_styles(doc, ats):
                letter_spacing=ats_track)
     para_style(doc, "TechCat", "8.6pt", bold=True, line_height="12.5pt",
                space_after="0.071cm")                                      # 2pt
-    para_style(doc, "TechItems", "8.6pt", line_height="12.5pt",
+    para_style(doc, "TechItems", "8.6pt", line_height="22pt",
                align="justify", text_align_last="justify",
                space_after="0.071cm")                                      # 2pt
     para_style(doc, "EntryTitle", "9.5pt", bold=True, line_height="13.8pt")
@@ -546,19 +546,22 @@ def skills_design(ctx):
     doc = ctx.doc
     section(doc, "Technical Skills")
     for cat, items in SKILLS:
-        # Label col 92pt; items col excludes the retired 6pt grid gap.
-        t = table(ctx, ["3.246cm", "16.272cm"])
+        # Label col 92pt like the retired grid; items col ends where the old
+        # rows ended (old rows never filled the full content width).
+        t = table(ctx, ["3.246cm", "15.697cm"])
         def catfill(p, cat=cat):
             span(p, cat, "B")
         def itemsfill(p, items=items):
             for j, (icon, label) in enumerate(items):
                 if j:
                     span(p, " \u00b7 ", "Gray")
-                    p.addText(" ")
+                    # Wide trailing gap replicates the retired flex separator
+                    # margins and forces the historical line breaks.
+                    p.addText("   ")
                 image_run(p, ctx, icon, "0.265cm")
                 p.addText(" ")
                 span(p, label, "B")
-        row(t, [("TechItems", catfill), ("TechItems", itemsfill)])
+        row(t, [("TechCat", catfill), ("TechItems", itemsfill)])
 
 
 def skills_ats(doc):
