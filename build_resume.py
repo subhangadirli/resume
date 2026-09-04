@@ -194,7 +194,7 @@ def new_document():
 def para_style(doc, name, size, bold=False, weight=None, color=None,
                align=None, space_before=None, space_after=None,
                line_height=None, underline=False, border_bottom=None,
-               keep_together=False):
+               padding_bottom=None, keep_together=False):
     from odf.style import (ParagraphProperties, Style, TextProperties)
 
     st = Style(name=name, family="paragraph")
@@ -209,6 +209,8 @@ def para_style(doc, name, size, bold=False, weight=None, color=None,
         pp_kwargs["lineheight"] = line_height
     if border_bottom:
         pp_kwargs["borderbottom"] = border_bottom
+    if padding_bottom:
+        pp_kwargs["paddingbottom"] = padding_bottom
     if keep_together:
         pp_kwargs["keeptogether"] = "always"
     st.addElement(ParagraphProperties(**pp_kwargs))
@@ -261,43 +263,66 @@ def bullet_list_style(doc):
 
 
 def add_styles(doc, ats):
+    # Absolute line heights replicate the retired CSS pt-for-pt. LibreOffice
+    # resolves relative (%) line heights against the wrong base, which
+    # inflated every line ~28% and repaginated the document.
+    sect_size = "12.5pt" if not ats else "11.5pt"
+    sect_lh = "15pt" if not ats else "13.8pt"
     para_style(doc, "Name", "21pt", bold=True, align="center",
-               space_after="0.071cm")                                   # 2pt
+               line_height="23.1pt", space_after="0.071cm")                # 2pt
     para_style(doc, "Headline", "10pt", bold=True, color="#222222",
-               align="center", space_after="0.177cm")                    # 5pt
+               align="center", line_height="14.5pt",
+               space_after="0.177cm")                                      # 5pt
     para_style(doc, "Contact", "8.5pt" if not ats else "8.8pt",
-               align="center", space_after="0.141cm")                    # 4pt
-    para_style(doc, "Divider", "2pt", space_before="0.212cm",            # 6pt
-               space_after="0.247cm", border_bottom="0.7pt solid #222222")
-    para_style(doc, "Section", "12.5pt" if not ats else "11.5pt",
-               bold=False if not ats else True,
-               weight="600" if not ats else None,
-               space_before="0.212cm", space_after="0.141cm")            # 6/4pt
+               align="center",
+               line_height="12.3pt" if not ats else "12.8pt",
+               space_after="0.212cm",                                     # 6pt collapsed
+               border_bottom="0.7pt solid #222222")
+    para_style(doc, "SectionFirst", sect_size,
+               bold=True if ats else False,
+               weight=None if ats else "600",
+               line_height=sect_lh,
+               space_before="0.247cm", space_after="0.141cm")              # 7/4pt
+    para_style(doc, "Section", sect_size,
+               bold=True if ats else False,
+               weight=None if ats else "600",
+               line_height=sect_lh,
+               space_before="0.212cm", space_after="0.141cm")              # 6/4pt
     para_style(doc, "Summary", "9.2pt" if not ats else "9.1pt",
-               line_height="150%")
-    para_style(doc, "Role", "9.3pt", bold=True, space_before="0.177cm")  # 5pt
+               line_height="13.8pt" if not ats else "13.65pt")
+    para_style(doc, "Role", "9.3pt", bold=True, line_height="12.1pt")
     para_style(doc, "Date", "8.4pt", color="#555555" if not ats else "#333333",
-               space_after="0.053cm")
-    para_style(doc, "Bullet", "8.7pt", color="#222222", line_height="140%")
+               line_height="12.2pt", space_after="0.088cm")                # 2.5pt
+    para_style(doc, "Bullet", "8.7pt", color="#222222",
+               line_height="12.2pt", space_after="0.035cm")                # 1pt
+    para_style(doc, "BulletLast", "8.7pt", color="#222222",
+               line_height="12.2pt", space_after="0.212cm")                # 1+5pt
     para_style(doc, "Project", "8.7pt", color="#222222",
-               line_height="145%", space_after="0.088cm")
-    para_style(doc, "TechCat", "8.6pt", bold=True, space_after="0.071cm")
-    para_style(doc, "TechItems", "8.6pt", line_height="145%",
-               space_after="0.071cm")
-    para_style(doc, "EntryTitle", "9.5pt", "B")
-    para_style(doc, "EntryMeta", "8.8pt", align="end")
-    para_style(doc, "EntrySub", "8.8pt", space_after="0.035cm")
-    para_style(doc, "EntrySubR", "8.8pt", align="end", space_after="0.035cm")
+               line_height="12.6pt", space_after="0.088cm")                # 2.5pt
+    para_style(doc, "TechCat", "8.6pt", bold=True, line_height="12.5pt",
+               space_after="0.071cm")                                      # 2pt
+    para_style(doc, "TechItems", "8.6pt", line_height="12.5pt",
+               space_after="0.071cm")                                      # 2pt
+    para_style(doc, "EntryTitle", "9.5pt", bold=True, line_height="13.8pt")
+    para_style(doc, "EntryMeta", "8.8pt", align="end", line_height="12.8pt")
+    para_style(doc, "EntrySub", "8.8pt", line_height="12.8pt",
+               space_after="0.035cm", padding_bottom="0.141cm")            # 1+4pt
+    para_style(doc, "EntrySubR", "8.8pt", align="end", line_height="12.8pt",
+               space_after="0.035cm", padding_bottom="0.141cm")            # 1+4pt
     para_style(doc, "EntryLink", "8.5pt", underline=True,
-               space_after="0.141cm")
-    para_style(doc, "Plain", "8.8pt", line_height="140%")
-    para_style(doc, "SkillsLine", "8.5pt", line_height="145%",
-               space_after="0.035cm")
-    para_style(doc, "ProfileLabel", "9.5pt", bold=True, space_after="0.035cm")
-    para_style(doc, "ProfileLink", "8.8pt", underline=True)
-    para_style(doc, "SpokenName", "9pt", bold=True)
-    para_style(doc, "SpokenLevel", "8.8pt")
-    para_style(doc, "Interest", "8.8pt", bold=True)
+               line_height="12.3pt", space_after="0.141cm")
+    para_style(doc, "Plain", "8.8pt", line_height="12.3pt")
+    para_style(doc, "SkillsLine", "8.5pt", line_height="12.3pt",
+               space_after="0.035cm")                                      # 1pt
+    para_style(doc, "ProfileLabel", "9.5pt", bold=True,
+               line_height="13.8pt", space_after="0.035cm")                # 1pt
+    para_style(doc, "ProfileLink", "8.8pt", underline=True,
+               line_height="12.8pt")
+    para_style(doc, "SpokenName", "9pt", bold=True, line_height="13.05pt")
+    para_style(doc, "SpokenLevel", "8.8pt", line_height="12.8pt")
+    para_style(doc, "Interest", "8.8pt", bold=True, line_height="12.8pt")
+    para_style(doc, "InterestT", "8.8pt", bold=True, line_height="12.8pt",
+               space_after="0.141cm")                                      # 4pt row gap
     char_style(doc, "B", bold=True)
     char_style(doc, "Gray", color="#999999")
     char_style(doc, "SmallGray", size="7pt", color="#555555")
@@ -431,16 +456,13 @@ def header(ctx, ats):
         span(p, " " + PHONE_RAW, "SmallGray")
         p.addText("  |  " + LOCATION + "  |  ")
         link(p, WEBSITE, WEBSITE, "Link")
-    P(doc, "Divider")
-
-
-def section(doc, title):
-    P(doc, "Section", title)
+def section(doc, title, first=False):
+    P(doc, "SectionFirst" if first else "Section", title)
 
 
 def profiles(ctx):
     doc = ctx.doc
-    section(doc, "Profiles")
+    section(doc, "Profiles", first=True)
     t = table(ctx, ["6.577cm", "6.577cm", "6.576cm"])
     # one row, each cell stacks label + link (two paragraphs per cell)
     from odf.table import TableCell, TableRow
@@ -462,7 +484,7 @@ def profiles(ctx):
 
 def links_ats(ctx):
     doc = ctx.doc
-    section(doc, "Links")
+    section(doc, "Links", first=True)
     p = P(doc, "Plain")
     p.addText("GitHub: ")
     link(p, "https://github.com/subhangadirli", "github.com/subhangadirli", "Link")
@@ -486,9 +508,10 @@ def experience(doc):
         P(doc, "Role", exp["role"])
         P(doc, "Date", exp["date"])
         lst = List(stylename="ResumeBullets")
-        for b in exp["bullets"]:
+        for i, b in enumerate(exp["bullets"]):
             item = ListItem()
-            item.addElement(_P(stylename="Bullet", text=b))
+            style = "BulletLast" if i == len(exp["bullets"]) - 1 else "Bullet"
+            item.addElement(_P(stylename=style, text=b))
             lst.addElement(item)
         doc.text.addElement(lst)
 
@@ -589,9 +612,10 @@ def interests(ctx):
     from odf.text import P as _P
     for i in range(0, len(INTERESTS), 3):
         tr = TableRow()
+        style = "InterestT" if i == 0 else "Interest"
         for icon, label in INTERESTS[i:i + 3]:
             tc = TableCell()
-            p = _P(stylename="Interest")
+            p = _P(stylename=style)
             image_run(p, ctx, icon, "0.318cm")
             p.addText(" ")
             span(p, label, "B")
