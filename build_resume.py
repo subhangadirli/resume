@@ -210,8 +210,6 @@ def para_style(doc, name, size, bold=False, weight=None, color=None,
         pp_kwargs["marginbottom"] = space_after
     if line_height:
         pp_kwargs["lineheight"] = line_height
-    if letter_spacing:
-        pp_kwargs["letterspacing"] = letter_spacing
     if border_bottom:
         pp_kwargs["borderbottom"] = border_bottom
     if padding_bottom:
@@ -221,6 +219,8 @@ def para_style(doc, name, size, bold=False, weight=None, color=None,
     st.addElement(ParagraphProperties(**pp_kwargs))
     tp_kwargs = {"fontsize": size, "fontname": FONT,
                  "fontfamily": "'" + FONT + "',Georgia,serif"}
+    if letter_spacing:
+        tp_kwargs["letterspacing"] = letter_spacing
     if bold:
         tp_kwargs["fontweight"] = "bold"
     elif weight:
