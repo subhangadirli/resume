@@ -256,8 +256,10 @@ def bullet_list_style(doc):
 
     st = ListStyle(name="ResumeBullets")
     level = ListLevelStyleBullet(level="1", bulletchar="\u2022")
-    level.addElement(ListLevelProperties(spacebefore="0.459cm",
-                                         minlabelwidth="0.45cm"))
+    # Text starts 13pt in (matches retired ul margin); bullet sits in the
+    # label box like the old outside marker.
+    level.addElement(ListLevelProperties(spacebefore="0.261cm",
+                                         minlabelwidth="0.2cm"))
     st.addElement(level)
     doc.styles.addElement(st)
 
@@ -528,7 +530,8 @@ def skills_design(ctx):
     doc = ctx.doc
     section(doc, "Technical Skills")
     for cat, items in SKILLS:
-        t = table(ctx, ["3.246cm", "16.484cm"])
+        # Label col 92pt; items col excludes the retired 6pt grid gap.
+        t = table(ctx, ["3.246cm", "16.272cm"])
         def catfill(p, cat=cat):
             span(p, cat, "B")
         def itemsfill(p, items=items):
