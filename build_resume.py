@@ -194,19 +194,24 @@ def new_document():
 def para_style(doc, name, size, bold=False, weight=None, color=None,
                align=None, space_before=None, space_after=None,
                line_height=None, underline=False, border_bottom=None,
-               padding_bottom=None, keep_together=False):
+               padding_bottom=None, letter_spacing=None,
+               text_align_last=None, keep_together=False):
     from odf.style import (ParagraphProperties, Style, TextProperties)
 
     st = Style(name=name, family="paragraph")
     pp_kwargs = {}
     if align:
         pp_kwargs["textalign"] = align
+    if text_align_last:
+        pp_kwargs["textalignlast"] = text_align_last
     if space_before:
         pp_kwargs["margintop"] = space_before
     if space_after:
         pp_kwargs["marginbottom"] = space_after
     if line_height:
         pp_kwargs["lineheight"] = line_height
+    if letter_spacing:
+        pp_kwargs["letterspacing"] = letter_spacing
     if border_bottom:
         pp_kwargs["borderbottom"] = border_bottom
     if padding_bottom:
@@ -290,20 +295,29 @@ def add_styles(doc, ats):
                weight=None if ats else "600",
                line_height=sect_lh,
                space_before="0.212cm", space_after="0.141cm")              # 6/4pt
+    # ATS gets hairline-negative tracking: LibreOffice sets type a touch
+    # wider than the retired engine, which wrapped long lines early and
+    # spilled ATS onto two pages. -0.1pt restores the old breaks invisibly.
+    ats_track = "-0.1pt" if ats else None
     para_style(doc, "Summary", "9.2pt" if not ats else "9.1pt",
-               line_height="13.8pt" if not ats else "13.65pt")
+               line_height="13.8pt" if not ats else "13.65pt",
+               letter_spacing=ats_track)
     para_style(doc, "Role", "9.3pt", bold=True, line_height="12.1pt")
     para_style(doc, "Date", "8.4pt", color="#555555" if not ats else "#333333",
                line_height="12.2pt", space_after="0.088cm")                # 2.5pt
     para_style(doc, "Bullet", "8.7pt", color="#222222",
-               line_height="12.2pt", space_after="0.035cm")                # 1pt
+               line_height="12.2pt", space_after="0.035cm",                # 1pt
+               letter_spacing=ats_track)
     para_style(doc, "BulletLast", "8.7pt", color="#222222",
-               line_height="12.2pt", space_after="0.212cm")                # 1+5pt
+               line_height="12.2pt", space_after="0.212cm",                # 1+5pt
+               letter_spacing=ats_track)
     para_style(doc, "Project", "8.7pt", color="#222222",
-               line_height="12.6pt", space_after="0.088cm")                # 2.5pt
+               line_height="12.6pt", space_after="0.088cm",                # 2.5pt
+               letter_spacing=ats_track)
     para_style(doc, "TechCat", "8.6pt", bold=True, line_height="12.5pt",
                space_after="0.071cm")                                      # 2pt
     para_style(doc, "TechItems", "8.6pt", line_height="12.5pt",
+               align="justify", text_align_last="justify",
                space_after="0.071cm")                                      # 2pt
     para_style(doc, "EntryTitle", "9.5pt", bold=True, line_height="13.8pt")
     para_style(doc, "EntryMeta", "8.8pt", align="end", line_height="12.8pt")
@@ -313,9 +327,11 @@ def add_styles(doc, ats):
                space_after="0.035cm", padding_bottom="0.141cm")            # 1+4pt
     para_style(doc, "EntryLink", "8.5pt", underline=True,
                line_height="12.3pt", space_after="0.141cm")
-    para_style(doc, "Plain", "8.8pt", line_height="12.3pt")
+    para_style(doc, "Plain", "8.8pt", line_height="12.3pt",
+               letter_spacing=ats_track)
     para_style(doc, "SkillsLine", "8.5pt", line_height="12.3pt",
-               space_after="0.035cm")                                      # 1pt
+               space_after="0.035cm",                                      # 1pt
+               letter_spacing=ats_track)
     para_style(doc, "ProfileLabel", "9.5pt", bold=True,
                line_height="13.8pt", space_after="0.035cm")                # 1pt
     para_style(doc, "ProfileLink", "8.8pt", underline=True,
@@ -675,6 +691,16 @@ def main():
         target = out / fname
         doc.save(str(target))
         print("wrote", target)
+        # Self-check with stdlib only: fail loudly if a critical
+        # formatting attribute did not survive serialization.
+        import zipfile
+        xml = (zipfile.ZipFile(str(target)).read("styles.xml").decode() +
+               zipfile.ZipFile(str(target)).read("content.xml").decode())
+        if variant == "design":
+            assert 'fo:text-align="justify"' in xml, "justify lost"
+            assert 'fo:text-align-last="justify"' in xml, "last-line justify lost"
+        else:
+            assert 'fo:letter-spacing="-0.1pt"' in xml, "ATS tracking lost"
 
 
 if __name__ == "__main__":
