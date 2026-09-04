@@ -305,6 +305,12 @@ def add_styles(doc, ats):
     char_style(doc, "BU", bold=True, underline=True)
     char_style(doc, "Link", color="#111111", underline=True)
     char_style(doc, "LinkB", bold=True, color="#111111", underline=True)
+    # LibreOffice paints hyperlinks with its built-in "Internet Link"
+    # character style, overriding inner spans. Redefining it here forces
+    # the document's dark link styling in both ODT and PDF export.
+    char_style(doc, "Internet Link", color="#111111", underline=True)
+    char_style(doc, "Visited Internet Link", color="#111111",
+               underline=True)
     bullet_list_style(doc)
 
 
