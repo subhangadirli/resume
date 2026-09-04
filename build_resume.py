@@ -295,14 +295,16 @@ def add_styles(doc, ats):
                space_after="0.035cm")
     para_style(doc, "ProfileLabel", "9.5pt", bold=True, space_after="0.035cm")
     para_style(doc, "ProfileLink", "8.8pt", underline=True)
-    para_style(doc, "SpokenName", "9pt", "B")
+    para_style(doc, "SpokenName", "9pt", bold=True)
     para_style(doc, "SpokenLevel", "8.8pt")
-    para_style(doc, "Interest", "8.8pt", "B")
-    char_style(doc, "B", "B")
+    para_style(doc, "Interest", "8.8pt", bold=True)
+    char_style(doc, "B", bold=True)
     char_style(doc, "Gray", color="#999999")
     char_style(doc, "SmallGray", size="7pt", color="#555555")
     char_style(doc, "U", underline=True)
     char_style(doc, "BU", bold=True, underline=True)
+    char_style(doc, "Link", color="#111111", underline=True)
+    char_style(doc, "LinkB", bold=True, color="#111111", underline=True)
     bullet_list_style(doc)
 
 
@@ -413,16 +415,16 @@ def header(ctx, ats):
             image_run(p, ctx, icon, "0.318cm")
             p.addText(" ")
             if kind[0] == "link":
-                link(p, kind[1], kind[2])
+                link(p, kind[1], kind[2], "Link")
             else:
                 p.addText(kind[1])
     else:
-        link(p, "mailto:" + EMAIL, EMAIL)
+        link(p, "mailto:" + EMAIL, EMAIL, "Link")
         p.addText("  |  ")
-        link(p, "tel:" + PHONE_RAW, PHONE)
+        link(p, "tel:" + PHONE_RAW, PHONE, "Link")
         span(p, " " + PHONE_RAW, "SmallGray")
         p.addText("  |  " + LOCATION + "  |  ")
-        link(p, WEBSITE, WEBSITE)
+        link(p, WEBSITE, WEBSITE, "Link")
     P(doc, "Divider")
 
 
@@ -446,7 +448,7 @@ def profiles(ctx):
         span(p1, label, "B")
         tc.addElement(p1)
         p2 = _P(stylename="ProfileLink")
-        link(p2, url, handle)
+        link(p2, url, handle, "Link")
         tc.addElement(p2)
         tr.addElement(tc)
     t.addElement(tr)
@@ -457,12 +459,12 @@ def links_ats(ctx):
     section(doc, "Links")
     p = P(doc, "Plain")
     p.addText("GitHub: ")
-    link(p, "https://github.com/subhangadirli", "github.com/subhangadirli")
+    link(p, "https://github.com/subhangadirli", "github.com/subhangadirli", "Link")
     p.addText("  |  LinkedIn: ")
     link(p, "https://www.linkedin.com/in/subhangadirli/",
-         "linkedin.com/in/subhangadirli")
+         "linkedin.com/in/subhangadirli", "Link")
     p.addText("  |  Codeberg: ")
-    link(p, "https://codeberg.org/subhangadirli", "codeberg.org/subhangadirli")
+    link(p, "https://codeberg.org/subhangadirli", "codeberg.org/subhangadirli", "Link")
 
 
 def summary(doc):
@@ -489,7 +491,7 @@ def projects(doc, ats):
     section(doc, "Projects" if ats else "Selected Projects")
     for name, url, desc in PROJECTS:
         p = P(doc, "Project")
-        link(p, url, name, "B")
+        link(p, url, name, "LinkB")
         p.addText(" - " + desc)
 
 
@@ -597,8 +599,11 @@ def interests(ctx):
 # ----------------------------------------------------------------------------
 
 def build(variant):
+    from odf.dc import Title
     ats = variant == "ats"
     doc = new_document()
+    doc.meta.addElement(Title(text="Subhan Gadirli Resume" +
+                              (" ATS" if ats else "")))
     add_styles(doc, ats)
     ctx = Ctx(doc)
     header(ctx, ats)
