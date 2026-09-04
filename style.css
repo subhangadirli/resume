@@ -52,6 +52,7 @@ a {
 /* Header */
 .header {
   margin-bottom: 4pt;
+  text-align: center;
 }
 .name {
   font-size: 21pt;
@@ -62,7 +63,7 @@ a {
 }
 .headline {
   font-size: 10pt;
-  font-weight: 400;
+  font-weight: 700;
   margin-bottom: 5pt;
   color: #222;
 }
@@ -72,6 +73,7 @@ a {
   gap: 4pt 14pt;
   font-size: 8.5pt;
   align-items: center;
+  justify-content: center;
 }
 .contact-item {
   display: flex;

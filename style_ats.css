@@ -40,14 +40,15 @@ a {
   text-decoration-color: #333;
 }
 
-.header { margin-bottom: 4pt; }
+.header { margin-bottom: 4pt; text-align: center; }
 .name { font-size: 21pt; font-weight: 700; line-height: 1.1; margin-bottom: 2pt; }
-.headline { font-size: 10pt; font-weight: 400; margin-bottom: 5pt; color: #222; }
+.headline { font-size: 10pt; font-weight: 700; margin-bottom: 5pt; color: #222; }
 .contact {
   display: flex;
   flex-wrap: wrap;
   gap: 4pt 14pt;
   font-size: 8.8pt;
+  justify-content: center;
 }
 .contact-item { white-space: nowrap; }
 
