@@ -298,7 +298,10 @@ def add_styles(doc, ats):
     # ATS gets hairline-negative tracking: LibreOffice sets type a touch
     # wider than the retired engine, which wrapped long lines early and
     # spilled ATS onto two pages. -0.1pt restores the old breaks invisibly.
+    # Bullets share it in both variants: design needs the same two wrapped
+    # lines pulled back so Education still fits on page one.
     ats_track = "-0.1pt" if ats else None
+    bullet_track = "-0.1pt"
     para_style(doc, "Summary", "9.2pt" if not ats else "9.1pt",
                line_height="13.8pt" if not ats else "13.65pt",
                letter_spacing=ats_track)
@@ -307,10 +310,10 @@ def add_styles(doc, ats):
                line_height="12.2pt", space_after="0.088cm")                # 2.5pt
     para_style(doc, "Bullet", "8.7pt", color="#222222",
                line_height="12.2pt", space_after="0.035cm",                # 1pt
-               letter_spacing=ats_track)
+               letter_spacing=bullet_track)
     para_style(doc, "BulletLast", "8.7pt", color="#222222",
                line_height="12.2pt", space_after="0.212cm",                # 1+5pt
-               letter_spacing=ats_track)
+               letter_spacing=bullet_track)
     para_style(doc, "Project", "8.7pt", color="#222222",
                line_height="12.6pt", space_after="0.088cm",                # 2.5pt
                letter_spacing=ats_track)
@@ -331,7 +334,7 @@ def add_styles(doc, ats):
                letter_spacing=ats_track)
     para_style(doc, "SkillsLine", "8.5pt", line_height="12.3pt",
                space_after="0.035cm",                                      # 1pt
-               letter_spacing=ats_track)
+               letter_spacing="-0.15pt" if ats else None)
     para_style(doc, "ProfileLabel", "9.5pt", bold=True,
                line_height="13.8pt", space_after="0.035cm")                # 1pt
     para_style(doc, "ProfileLink", "8.8pt", underline=True,
@@ -552,12 +555,14 @@ def skills_design(ctx):
         def catfill(p, cat=cat):
             span(p, cat, "B")
         def itemsfill(p, items=items):
+            from odf.text import S
             for j, (icon, label) in enumerate(items):
                 if j:
                     span(p, " \u00b7 ", "Gray")
+                    # Explicit preserved spaces: raw runs collapse in ODF.
                     # Wide trailing gap replicates the retired flex separator
                     # margins and forces the historical line breaks.
-                    p.addText("   ")
+                    p.addElement(S(c="2"))
                 image_run(p, ctx, icon, "0.265cm")
                 p.addText(" ")
                 span(p, label, "B")
