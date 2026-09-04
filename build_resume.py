@@ -414,13 +414,25 @@ def image_run(p, ctx, svg_name, size_cm):
     p.addElement(frame)
 
 
-def table(ctx, col_widths):
+def table(ctx, col_widths, align="left"):
     from odf.table import Table, TableColumn
-    t = Table()
+    from odf.style import Style, TableProperties
+    total_cm = sum(float(w.replace("cm", "")) for w in col_widths)
+    tname = "T" + ("%.3f" % total_cm).replace(".", "_")
+    if tname not in _table_cache:
+        st = Style(name=tname, family="table")
+        st.addElement(TableProperties(width="%.3fcm" % total_cm,
+                                      align=align))
+        ctx.doc.automaticstyles.addElement(st)
+        _table_cache[tname] = True
+    t = Table(stylename=tname)
     for w in col_widths:
         t.addElement(TableColumn(stylename=_col_style(ctx.doc, w)))
     ctx.doc.text.addElement(t)
     return t
+
+
+_table_cache = {}
 
 
 _col_cache = {}
@@ -565,7 +577,8 @@ def skills_design(ctx):
                     p.addElement(S(c="2"))
                 image_run(p, ctx, icon, "0.265cm")
                 p.addText(" ")
-                span(p, label, "B")
+                # No-break space: the retired style never split a label.
+                span(p, label.replace(" ", "\u00a0"), "B")
         row(t, [("TechCat", catfill), ("TechItems", itemsfill)])
 
 
@@ -707,6 +720,7 @@ def main():
         if variant == "design":
             assert 'fo:text-align="justify"' in xml, "justify lost"
             assert 'fo:text-align-last="justify"' in xml, "last-line justify lost"
+            assert 'table:align="left"' in xml, "table align lost"
         else:
             assert 'fo:letter-spacing="-0.1pt"' in xml, "ATS tracking lost"
 
