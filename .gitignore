@@ -3,4 +3,5 @@
 *.docx
 *.odt
 dist/
+build/
 __pycache__/
