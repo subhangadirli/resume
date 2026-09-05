@@ -293,12 +293,12 @@ def add_styles(doc, ats):
                bold=True if ats else False,
                weight=None if ats else "600",
                line_height=sect_lh,
-               space_before="0.212cm", space_after="0.124cm")              # 6/3.5pt
+               space_before="0.212cm", space_after="0.141cm")              # 6/4pt
     para_style(doc, "Section", sect_size,
                bold=True if ats else False,
                weight=None if ats else "600",
                line_height=sect_lh,
-               space_before="0.177cm", space_after="0.124cm")              # 5/3.5pt
+               space_before="0.177cm", space_after="0.141cm")              # 5/4pt
     # ATS gets hairline-negative tracking: LibreOffice sets type a touch
     # wider than the retired engine, which wrapped long lines early and
     # spilled ATS onto two pages. -0.1pt restores the old breaks invisibly.
@@ -311,12 +311,12 @@ def add_styles(doc, ats):
                letter_spacing=ats_track)
     para_style(doc, "Role", "9.3pt", bold=True, line_height="12.1pt")
     para_style(doc, "Date", "8.4pt", color="#555555" if not ats else "#333333",
-               line_height="12.2pt", space_after="0.053cm")                # 1.5pt
+               line_height="12.2pt", space_after="0.071cm")                # 2pt
     para_style(doc, "Bullet", "8.7pt", color="#222222",
                line_height="12.2pt", space_after="0.025cm",                # 0.7pt
                letter_spacing=bullet_track)
     para_style(doc, "BulletLast", "8.7pt", color="#222222",
-               line_height="12.2pt", space_after="0.159cm",                # 1+3.5pt
+               line_height="12.2pt", space_after="0.177cm",                # 1+4pt
                letter_spacing=bullet_track)
     para_style(doc, "Project", "8.7pt", color="#222222",
                line_height="12.6pt", space_after="0.053cm",                # 1.5pt
