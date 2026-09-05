@@ -285,16 +285,20 @@ def add_styles(doc, ats):
                line_height="12.3pt" if not ats else "12.8pt",
                space_after="0.212cm",                                     # 6pt collapsed
                border_bottom="0.7pt solid #222222")
+    # Spacings below are shaved ~0.5-1pt vs the retired CSS. LibreOffice
+    # expands every line to the font's natural height (~+0.4pt/row), so
+    # exact CSS spacings paginate one entry too long; the shave compensates
+    # invisibly and restores the original page breaks.
     para_style(doc, "SectionFirst", sect_size,
                bold=True if ats else False,
                weight=None if ats else "600",
                line_height=sect_lh,
-               space_before="0.247cm", space_after="0.141cm")              # 7/4pt
+               space_before="0.212cm", space_after="0.124cm")              # 6/3.5pt
     para_style(doc, "Section", sect_size,
                bold=True if ats else False,
                weight=None if ats else "600",
                line_height=sect_lh,
-               space_before="0.212cm", space_after="0.141cm")              # 6/4pt
+               space_before="0.177cm", space_after="0.124cm")              # 5/3.5pt
     # ATS gets hairline-negative tracking: LibreOffice sets type a touch
     # wider than the retired engine, which wrapped long lines early and
     # spilled ATS onto two pages. -0.1pt restores the old breaks invisibly.
@@ -307,33 +311,33 @@ def add_styles(doc, ats):
                letter_spacing=ats_track)
     para_style(doc, "Role", "9.3pt", bold=True, line_height="12.1pt")
     para_style(doc, "Date", "8.4pt", color="#555555" if not ats else "#333333",
-               line_height="12.2pt", space_after="0.088cm")                # 2.5pt
+               line_height="12.2pt", space_after="0.071cm")                # 2pt
     para_style(doc, "Bullet", "8.7pt", color="#222222",
                line_height="12.2pt", space_after="0.035cm",                # 1pt
                letter_spacing=bullet_track)
     para_style(doc, "BulletLast", "8.7pt", color="#222222",
-               line_height="12.2pt", space_after="0.212cm",                # 1+5pt
+               line_height="12.2pt", space_after="0.177cm",                # 1+4pt
                letter_spacing=bullet_track)
     para_style(doc, "Project", "8.7pt", color="#222222",
-               line_height="12.6pt", space_after="0.088cm",                # 2.5pt
+               line_height="12.6pt", space_after="0.071cm",                # 2pt
                letter_spacing=ats_track)
     para_style(doc, "TechCat", "8.6pt", bold=True, line_height="12.5pt",
-               space_after="0.071cm")                                      # 2pt
+               space_after="0.053cm")                                      # 1.5pt
     para_style(doc, "TechItems", "8.6pt", line_height="22pt",
                align="justify", text_align_last="justify",
-               space_after="0.071cm")                                      # 2pt
+               space_after="0.053cm")                                      # 1.5pt
     para_style(doc, "EntryTitle", "9.5pt", bold=True, line_height="13.8pt")
     para_style(doc, "EntryMeta", "8.8pt", align="end", line_height="12.8pt")
     para_style(doc, "EntrySub", "8.8pt", line_height="12.8pt",
-               space_after="0.035cm", padding_bottom="0.141cm")            # 1+4pt
+               space_after="0.035cm", padding_bottom="0.106cm")            # 1+3pt
     para_style(doc, "EntrySubR", "8.8pt", align="end", line_height="12.8pt",
-               space_after="0.035cm", padding_bottom="0.141cm")            # 1+4pt
+               space_after="0.035cm", padding_bottom="0.106cm")            # 1+3pt
     para_style(doc, "EntryLink", "8.5pt", underline=True,
                line_height="12.3pt", space_after="0.141cm")
     para_style(doc, "Plain", "8.8pt", line_height="12.3pt",
                letter_spacing=ats_track)
     para_style(doc, "SkillsLine", "8.5pt", line_height="12.3pt",
-               space_after="0.035cm",                                      # 1pt
+               space_after="0.018cm",                                      # 0.5pt
                letter_spacing="-0.15pt" if ats else None)
     para_style(doc, "ProfileLabel", "9.5pt", bold=True,
                line_height="13.8pt", space_after="0.035cm")                # 1pt
