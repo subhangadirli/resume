@@ -25,25 +25,18 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libreoffice-writer
+          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 libjpeg-dev libopenjp2-7-dev libffi-dev
 
-      - name: Install Python dependencies
-        run: pip install odfpy cairosvg
+      - name: Install WeasyPrint
+        # Pinned to the version that built the reference PDFs for
+        # byte-stable output.
+        run: pip install "weasyprint==69.0"
 
-      - name: Install resume fonts
+      - name: Build PDFs (faithful renders)
         run: |
-          mkdir -p ~/.local/share/fonts
-          cp assets/fonts/*.ttf ~/.local/share/fonts/
-          fc-cache -f ~/.local/share/fonts
-
-      - name: Build ODT (canonical artifacts)
-        run: |
-          python3 build_resume.py --out dist
-          ls -la dist/
-
-      - name: Export PDF from ODT (LibreOffice, layout-identical)
-        run: |
-          soffice --headless --convert-to pdf --outdir dist dist/Subhan-Gadirli-Resume.odt dist/Subhan-Gadirli-Resume-ATS.odt
+          mkdir -p dist
+          weasyprint resume.html dist/Subhan-Gadirli-Resume.pdf
+          weasyprint resume_ats.html dist/Subhan-Gadirli-Resume-ATS.pdf
           ls -la dist/
 
       - name: Upload build artifacts (PR preview)
@@ -57,7 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NOTES="ODT is the canonical build artifact; PDF is a LibreOffice export of the same ODT, layout-identical. Built from ${GITHUB_SHA} on master. To view or edit the ODT as designed, install the IBM Plex Serif fonts (assets/fonts)."
+          NOTES="PDFs rendered from HTML with WeasyPrint. Built from ${GITHUB_SHA} on master."
           gh release delete latest --yes --cleanup-tag || true
           git tag -f latest "$GITHUB_SHA"
           git push -f origin latest

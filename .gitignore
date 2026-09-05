@@ -1,7 +1,5 @@
 # Build outputs are distributed via GitHub Releases, not tracked in git
 *.pdf
-*.docx
-*.odt
 dist/
 build/
 __pycache__/
