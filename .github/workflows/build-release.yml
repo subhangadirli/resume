@@ -57,7 +57,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NOTES="ODT is the canonical build artifact; PDF is a LibreOffice export of the same ODT, layout-identical. Built from ${GITHUB_SHA} on master."
+          NOTES="ODT is the canonical build artifact; PDF is a LibreOffice export of the same ODT, layout-identical. Built from ${GITHUB_SHA} on master. To view or edit the ODT as designed, install the IBM Plex Serif fonts (assets/fonts)."
           gh release delete latest --yes --cleanup-tag || true
           git tag -f latest "$GITHUB_SHA"
           git push -f origin latest

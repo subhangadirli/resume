@@ -468,6 +468,7 @@ def row(t, cells):
 # ----------------------------------------------------------------------------
 
 def header(ctx, ats):
+    from odf.text import S
     doc = ctx.doc
     P(doc, "Name", "Subhan Gadirli")
     P(doc, "Headline", "Full-Stack Developer")
@@ -475,7 +476,9 @@ def header(ctx, ats):
     if not ats:
         for i, (icon, kind) in enumerate(CONTACT_ICONS):
             if i:
-                p.addText("   ")
+                # Preserved spaces: raw runs collapse in ODF. ~14pt gap
+                # replicates the retired flex contact spacing.
+                p.addElement(S(c="6"))
             image_run(p, ctx, icon, "0.318cm")
             p.addText(" ")
             if kind[0] == "link":
@@ -486,7 +489,8 @@ def header(ctx, ats):
         link(p, "mailto:" + EMAIL, EMAIL, "Link")
         p.addText("  |  ")
         link(p, "tel:" + PHONE_RAW, PHONE, "Link")
-        span(p, " " + PHONE_RAW, "SmallGray")
+        p.addElement(S(c="1"))
+        span(p, PHONE_RAW, "SmallGray")
         p.addText("  |  " + LOCATION + "  |  ")
         link(p, WEBSITE, WEBSITE, "Link")
 def section(doc, title, first=False):
