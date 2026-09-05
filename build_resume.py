@@ -324,7 +324,6 @@ def add_styles(doc, ats):
     para_style(doc, "TechCat", "8.6pt", bold=True, line_height="12.5pt",
                space_after="0.035cm")                                      # 1pt
     para_style(doc, "TechItems", "8.6pt", line_height="22pt",
-               align="justify", text_align_last="justify",
                space_after="0.035cm")                                      # 1pt
     para_style(doc, "EntryTitle", "9.5pt", bold=True, line_height="13.8pt")
     para_style(doc, "EntryMeta", "8.8pt", align="end", line_height="12.8pt")
@@ -727,8 +726,6 @@ def main():
         xml = (zipfile.ZipFile(str(target)).read("styles.xml").decode() +
                zipfile.ZipFile(str(target)).read("content.xml").decode())
         if variant == "design":
-            assert 'fo:text-align="justify"' in xml, "justify lost"
-            assert 'fo:text-align-last="justify"' in xml, "last-line justify lost"
             assert 'table:align="left"' in xml, "table align lost"
         else:
             assert 'fo:letter-spacing="-0.1pt"' in xml, "ATS tracking lost"
