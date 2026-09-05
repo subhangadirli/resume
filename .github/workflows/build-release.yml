@@ -35,8 +35,8 @@ jobs:
       - name: Build PDFs (faithful renders)
         run: |
           mkdir -p dist
-          weasyprint resume.html dist/Subhan-Gadirli-Resume.pdf
-          weasyprint resume_ats.html dist/Subhan-Gadirli-Resume-ATS.pdf
+          weasyprint resume.html dist/Subhan_Gadirli.pdf
+          weasyprint resume_ats.html dist/Subhan_Gadirli_ATS.pdf
           ls -la dist/
 
       - name: Upload build artifacts (PR preview)
