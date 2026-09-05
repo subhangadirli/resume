@@ -578,10 +578,11 @@ def skills_design(ctx):
             from odf.text import S
             for j, (icon, label) in enumerate(items):
                 if j:
-                    span(p, " \u00b7 ", "Gray")
-                    # Explicit preserved spaces: raw runs collapse in ODF.
-                    # Wide trailing gap replicates the retired flex separator
-                    # margins and forces the historical line breaks.
+                    # Preserved spaces replicate the retired flex separator
+                    # margins (raw runs collapse in ODF). Gaps sit between
+                    # words so every unit counts toward line breaking.
+                    p.addElement(S(c="2"))
+                    span(p, "\u00b7", "Gray")
                     p.addElement(S(c="2"))
                 image_run(p, ctx, icon, "0.265cm")
                 p.addText(" ")
