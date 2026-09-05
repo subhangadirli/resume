@@ -1,0 +1,18 @@
+name: Redeploy Website
+
+# jkgadirli.dev inlines this repo's markup and stylesheet at build time, so
+# the site must rebuild after every resume change to serve the newest paper.
+# Needs the Vercel deploy hook URL in the JKGADIRLI_DEV_DEPLOY_HOOK secret.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        run: curl -fsS -X POST "$DEPLOY_HOOK_URL"
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.JKGADIRLI_DEV_DEPLOY_HOOK }}
